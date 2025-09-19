@@ -2,11 +2,13 @@ package com.example.LMS.controller;
 
 import com.example.LMS.dto.request.BookRequest;
 import com.example.LMS.dto.response.ApiResponse;
+import com.example.LMS.dto.response.BookResponse;
 import com.example.LMS.model.Admin;
 import com.example.LMS.model.Book;
 import com.example.LMS.model.BookStatus;
 import com.example.LMS.repository.AdminRepository;
 import com.example.LMS.repository.BookRepository;
+import com.example.LMS.service.BookService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +30,9 @@ public class AdminController {
 
     @Autowired
     private AdminRepository adminRepository;
+    
+    @Autowired
+    private BookService bookService;
     
     @Autowired 
     private BookRepository bookRepository;
@@ -53,27 +58,7 @@ public class AdminController {
 
     
     
-    //books api
-    @Operation(summary = "Add new book")
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
-    public ResponseEntity<?> addBook(@Valid @RequestBody BookRequest request) {
-        Book book = new Book();
-        book.setTitle(request.getTitle());
-        book.setAuthor(request.getAuthor());
-        book.setCategory(request.getCategory());
-        book.setDescription(request.getDescription());
-        book.setImageUrl(request.getImageUrl());
-        book.setTotalCopies(request.getTotalCopies());
-        book.setAvailableCopies(request.getTotalCopies());
-        book.setStatus(BookStatus.AVAILABLE);
-        book.setIsActive(true);
-        book.setCreatedDate(LocalDateTime.now());
-
-        Book savedBook = bookRepository.save(book);
-        return ResponseEntity.ok(new ApiResponse(true, "Book added successfully", savedBook));
-    }
-
+    
     @Operation(summary = "Update admin status")
     @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
@@ -92,9 +77,9 @@ public class AdminController {
     
     @Operation(summary = "Update book")
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
-    public ResponseEntity<?> updateBook(@PathVariable Long id, @Valid @RequestBody BookRequest request) {
-        Optional<Book> existingBook = bookRepository.findById(id);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateBook(@PathVariable String id, @Valid @RequestBody BookRequest request) {
+        Optional<Book> existingBook = bookRepository.findByBookId(id);
         if (!existingBook.isPresent()) {
             return ResponseEntity.notFound().build();
         }
@@ -104,7 +89,7 @@ public class AdminController {
         book.setAuthor(request.getAuthor());
         book.setCategory(request.getCategory());
         book.setDescription(request.getDescription());
-        book.setImageUrl(request.getImageUrl());
+        book.setImageUrl(request.getImageFile());
         book.setTotalCopies(request.getTotalCopies());
         book.setUpdatedDate(LocalDateTime.now());
 
@@ -116,7 +101,7 @@ public class AdminController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<?> deleteBook(@PathVariable String id) {
-        Optional<Book> book = bookRepository.findById(Long.parseLong(id));
+    	Optional<Book> book = bookRepository.findByBookId(id);;
         if (!book.isPresent()) {
             return ResponseEntity.notFound().build();
         }
@@ -125,7 +110,37 @@ public class AdminController {
         bookToDelete.setIsActive(false);
         bookToDelete.setUpdatedDate(LocalDateTime.now());
         bookRepository.save(bookToDelete);
+       
 
         return ResponseEntity.ok(new ApiResponse(true, "Book deleted successfully"));
+    }
+    
+    @Operation(summary = "Add new book")
+    @PostMapping("/books/add")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> addBook(@Valid @RequestBody BookRequest request) {
+        Book book = new Book();
+        book.setBookId(request.getBookId());
+        book.setTitle(request.getTitle());
+        book.setAuthor(request.getAuthor());
+        book.setCategory(request.getCategory());
+        book.setDescription(request.getDescription());
+        book.setImageUrl(request.getImageFile());
+        book.setTotalCopies(request.getTotalCopies());
+        book.setAvailableCopies(request.getTotalCopies());
+        book.setStatus(BookStatus.AVAILABLE);
+        book.setIsActive(true);
+        book.setCreatedDate(LocalDateTime.now());
+
+        Book savedBook = bookRepository.save(book);
+        return ResponseEntity.ok(new ApiResponse(true, "Book added successfully", savedBook));
+    }
+    
+    @Operation(summary = "Get all books")
+    @GetMapping("/books")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getAllBooks() {
+        List<BookResponse> books =bookService.getAllBooks();
+        return ResponseEntity.ok(new ApiResponse(true, "Books retrieved successfully Admin", books));
     }
 }

@@ -1,5 +1,7 @@
 package com.example.LMS.service;
 
+import com.example.LMS.mapper.Mapper;
+import com.example.LMS.dto.response.CompResponse;
 import com.example.LMS.model.*;
 import com.example.LMS.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +18,9 @@ public class ComplaintService {
 
     @Autowired
     private ComplaintRepository complaintRepository;
+    
+    @Autowired
+    private Mapper mapper;
 
     @Autowired
     private ComplaintResponseRepository complaintResponseRepository;
@@ -22,20 +28,34 @@ public class ComplaintService {
     @Autowired
     private MemberRepository memberRepository;
 
-    public List<Complaint> getAllComplaints() {
-        return complaintRepository.findAll();
+    public List<CompResponse> getAllComplaints() {
+    	List<CompResponse> compResponses=new ArrayList<CompResponse>();
+        List<Complaint> complaints=complaintRepository.findAll();
+        
+        for(Complaint complaint:complaints) {
+        	System.out.println(complaint.getMember().getId());
+        	compResponses.add(mapper.toResponse(complaint));
+        	
+        }
+        return compResponses;
     }
 
-    public List<Complaint> getComplaintsByMember(Long memberId) {
-        return complaintRepository.findByMemberId(memberId);
+    public List<CompResponse> getComplaintsByMember(Long memberId) {
+    	List<CompResponse> compResponses=new ArrayList<CompResponse>();
+        List<Complaint> complaints=complaintRepository.findByMemberId(memberId);
+        for(Complaint complaint:complaints) {
+        	compResponses.add(mapper.toResponse(complaint));
+        }
+        return compResponses;
     }
 
     public List<Complaint> getComplaintsByStatus(ComplaintStatus status) {
         return complaintRepository.findByStatus(status);
     }
 
-    public Optional<Complaint> getComplaintById(Long id) {
-        return complaintRepository.findById(id);
+    public Optional<CompResponse> getComplaintById(Long id) {
+        return complaintRepository.findById(id)
+        		.map(complaint->mapper.toResponse(complaint));
     }
 
     @Transactional

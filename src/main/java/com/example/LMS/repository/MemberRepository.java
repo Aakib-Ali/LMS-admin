@@ -2,6 +2,7 @@ package com.example.LMS.repository;
 
 import com.example.LMS.model.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
@@ -10,4 +11,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmail(String email);
     boolean existsByEmail(String email);
     boolean existsByMobileNumber(String mobileNumber);
+    
+//    @Query("SELECT COALESE(SUM(m.totalFines),0) FROM Member m")
+//    public Long sumTotalFines();
 }

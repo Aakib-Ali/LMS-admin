@@ -3,6 +3,8 @@ package com.example.LMS.controller;
 import com.example.LMS.dto.response.ApiResponse;
 import com.example.LMS.model.*;
 import com.example.LMS.repository.*;
+import com.example.LMS.service.MemberService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ public class DashboardController {
 
     @Autowired
     private BookRepository bookRepository;
+    
 
     @Autowired
     private MemberRepository memberRepository;
@@ -48,20 +51,22 @@ public class DashboardController {
                 .sum();
         long overdueBooks = borrowedBookRepository.findOverdueBooks(LocalDate.now(), BorrowStatus.BORROWED).size();
         long totalComplaints = complaintRepository.count();
-        long openComplaints = complaintRepository.findByStatus(ComplaintStatus.OPEN).size();
+        long pendingComplaints = complaintRepository.findByStatus(ComplaintStatus.OPEN).size();
         long totalDonations = donationRepository.count();
         long pendingDonations = donationRepository.findByStatus(DonationStatus.PENDING).size();
-
+        
+        
+        
         stats.put("totalBooks", totalBooks);
         stats.put("availableBooks", availableBooks);
         stats.put("totalMembers", totalMembers);
         stats.put("totalBorrowedBooks", totalBorrowedBooks);
         stats.put("overdueBooks", overdueBooks);
         stats.put("totalComplaints", totalComplaints);
-        stats.put("openComplaints", openComplaints);
+        stats.put("pendingComplaints", pendingComplaints); 
         stats.put("totalDonations", totalDonations);
         stats.put("pendingDonations", pendingDonations);
-
+        System.out.println(stats);
         return ResponseEntity.ok(new ApiResponse(true, "Dashboard stats retrieved successfully", stats));
     }
 
@@ -70,18 +75,30 @@ public class DashboardController {
     public ResponseEntity<?> getMemberDashboardStats(@PathVariable Long memberId) {
         Map<String, Object> stats = new HashMap<>();
         
+
+
+        long totalBooks=bookRepository.count();
+        long totalMember=memberRepository.count();
         int currentBorrowedBooks = borrowedBookRepository.countByMemberIdAndStatus(memberId, BorrowStatus.BORROWED);
         long totalBorrowHistory = borrowedBookRepository.findByMemberId(memberId).size();
         long totalComplaints = complaintRepository.findByMemberId(memberId).size();
         long openComplaints = complaintRepository.findByMemberIdAndStatus(memberId, ComplaintStatus.OPEN).size();
         long totalDonations = donationRepository.findByMemberId(memberId).size();
         long pendingDonations = donationRepository.findByMemberIdAndStatus(memberId, DonationStatus.PENDING).size();
+//        long totalFines =memberRepository.sumTotalFines();
+        
 
-        stats.put("currentBorrowedBooks", currentBorrowedBooks);
-        stats.put("totalBorrowHistory", totalBorrowHistory);
+        stats.put("totalBooks", totalBooks);
+        stats.put("totalMember", totalMember);
+        stats.put("totalBorrowedBooks", currentBorrowedBooks);
         stats.put("totalComplaints", totalComplaints);
-        stats.put("openComplaints", openComplaints);
-        stats.put("totalDonations", totalDonations);
+        stats.put("pendingComplaints", openComplaints);
+        stats.put("overoverdueBooks", 0);
+        stats.put("totalFines", 100);
+//        stats.put("totalBorrowHistory", totalBorrowHistory);
+        
+        
+//        stats.put("totalDonations", totalDonations);
         stats.put("pendingDonations", pendingDonations);
 
         return ResponseEntity.ok(new ApiResponse(true, "Member dashboard stats retrieved successfully", stats));

@@ -2,8 +2,11 @@ package com.example.LMS.controller;
 
 import com.example.LMS.dto.request.ComplaintRequest;
 import com.example.LMS.dto.response.ApiResponse;
+import com.example.LMS.dto.response.CompResponse;
 import com.example.LMS.model.*;
 import com.example.LMS.repository.*;
+import com.example.LMS.service.ComplaintService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,9 @@ public class ComplaintController {
 
     @Autowired
     private ComplaintRepository complaintRepository;
+    
+    @Autowired
+    private ComplaintService complaintService;
 
     @Autowired
     private ComplaintResponseRepository complaintResponseRepository;
@@ -32,22 +38,22 @@ public class ComplaintController {
 
     @Operation(summary = "Get all complaints")
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllComplaints() {
-        List<Complaint> complaints = complaintRepository.findAll();
+        List<CompResponse> complaints = complaintService.getAllComplaints();
         return ResponseEntity.ok(new ApiResponse(true, "Complaints retrieved successfully", complaints));
     }
 
     @Operation(summary = "Get complaints by member")
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<?> getComplaintsByMember(@PathVariable Long memberId) {
-        List<Complaint> complaints = complaintRepository.findByMemberId(memberId);
+    public ResponseEntity<?> getComplaintsByMember(@PathVariable String memberId) {
+        List<Complaint> complaints = complaintRepository.findByMemberId(Long.parseLong(memberId));
         return ResponseEntity.ok(new ApiResponse(true, "Complaints retrieved successfully", complaints));
     }
 
     @Operation(summary = "Get complaints by status")
     @GetMapping("/status/{status}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getComplaintsByStatus(@PathVariable String status) {
         try {
             ComplaintStatus complaintStatus = ComplaintStatus.valueOf(status.toUpperCase());
@@ -60,8 +66,8 @@ public class ComplaintController {
 
     @Operation(summary = "Get complaint by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getComplaintById(@PathVariable Long id) {
-        Optional<Complaint> complaint = complaintRepository.findById(id);
+    public ResponseEntity<?> getComplaintById(@PathVariable String id) {
+        Optional<CompResponse> complaint = complaintService.getComplaintById(Long.parseLong(id));
         if (complaint.isPresent()) {
             return ResponseEntity.ok(new ApiResponse(true, "Complaint retrieved successfully", complaint.get()));
         }
@@ -134,9 +140,9 @@ public class ComplaintController {
     @Operation(summary = "Add response to complaint")
     @PostMapping("/{id}/response")
     public ResponseEntity<?> addComplaintResponse(@PathVariable Long id, 
-                                                @RequestParam String responseText,
-                                                @RequestParam String respondedBy,
-                                                @RequestParam(defaultValue = "false") boolean isFromAdmin) {
+                                                @RequestBody String responseText,
+                                                @RequestParam(defaultValue ="ADMIN") String respondedBy,
+                                                @RequestParam(defaultValue = "True") boolean isFromAdmin) {
         Optional<Complaint> complaintOpt = complaintRepository.findById(id);
         if (!complaintOpt.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -150,7 +156,7 @@ public class ComplaintController {
         response.setResponseDate(LocalDateTime.now());
 
         ComplaintResponse savedResponse = complaintResponseRepository.save(response);
-        return ResponseEntity.ok(new ApiResponse(true, "Response added successfully", savedResponse));
+        return ResponseEntity.ok(new ApiResponse(true, "Response added successfully", null));
     }
 
     @Operation(summary = "Get responses for a complaint")

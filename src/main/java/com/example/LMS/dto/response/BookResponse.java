@@ -1,11 +1,8 @@
 package com.example.LMS.dto.response;
 
 
-
-import java.time.LocalDate;
-
 public class BookResponse {
-    private String bookId;
+    private String id;
     private String title;
     private String author;
     private String category;
@@ -14,12 +11,21 @@ public class BookResponse {
     private Integer totalCopies;
     private Integer availableCopies;
     private String availabilityStatus;
+    private boolean isActive;
     
-    public BookResponse() {}
+    public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public BookResponse() {}
     
     // Getters and Setters
-    public String getBookId() { return bookId; }
-    public void setBookId(String bookId) { this.bookId = bookId; }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
     
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }

@@ -30,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
-            logger.debug("JWT token received:"+jwt);  // Log the token
+            logger.debug("JWT token received:"+jwt); // Log the token
 
             if (!StringUtils.hasText(jwt)) {
                 logger.warn("No JWT token found in request");
@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     logger.error("JWT token malformed: does not contain two '.' separators");
                 } else {
                     String email = jwtUtil.extractEmail(jwt);
-//                    logger.debug("Extracted email from JWT: {}", email);
+// logger.debug("Extracted email from JWT: {}", email);
 
                     if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
@@ -62,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7).trim();  // trim whitespace just in case
+            return bearerToken.substring(7).trim(); // trim whitespace just in case
         }
         return null;
     }

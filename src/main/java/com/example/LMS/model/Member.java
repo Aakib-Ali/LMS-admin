@@ -52,8 +52,18 @@ public class Member {
 
     @Column(name = "total_fines")
     private Double totalFines = 0.0;
+    
+    @Column(name="member_id")
+    private String memberId;
 
-    @Column(name = "has_overdue_books")
+    public String getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(String memberId) {
+		this.memberId = memberId;
+	}
+	@Column(name = "has_overdue_books")
     private Boolean hasOverdueBooks = false;
 
     @Column(name = "secret_question")
@@ -61,8 +71,19 @@ public class Member {
 
     @Column(name = "secret_answer")
     private String secretAnswer;
+    
+    @Column(name="Last_login")
+    private LocalDateTime lastLogin;
 
-    public Member() {}
+    public LocalDateTime getLastLogin() {
+		return lastLogin;
+	}
+
+	public void setLastLogin(LocalDateTime lastLogin) {
+		this.lastLogin = lastLogin;
+	}
+
+	public Member() {}
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

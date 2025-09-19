@@ -1,8 +1,11 @@
 package com.example.LMS.controller;
 
 import com.example.LMS.dto.response.ApiResponse;
+import com.example.LMS.dto.response.MemberResponse;
 import com.example.LMS.model.Member;
 import com.example.LMS.repository.MemberRepository;
+import com.example.LMS.service.MemberService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +23,15 @@ public class MemberController {
 
     @Autowired
     private MemberRepository memberRepository;
+    
+    @Autowired
+    MemberService memberService;
 
     @Operation(summary = "Get all members")
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllMembers() {
-        List<Member> members = memberRepository.findAll();
+        List<MemberResponse> members = memberService.getAllMembers();
         return ResponseEntity.ok(new ApiResponse(true, "Members retrieved successfully", members));
     }
 
@@ -55,3 +61,5 @@ public class MemberController {
         return ResponseEntity.ok(new ApiResponse(true, "Member status updated successfully"));
     }
 }
+
+

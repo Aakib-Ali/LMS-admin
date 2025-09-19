@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Table(name = "books")
 public class Book {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @NotBlank
@@ -20,7 +20,19 @@ public class Book {
     @Column(nullable = false)
     private String author;
 
+
     @NotBlank
+    @Column(nullable = false)
+    private String bookId;
+
+    public String getBookId() {
+		return bookId;
+	}
+
+	public void setBookId(String bookId) {
+		this.bookId = bookId;
+	}
+	@NotBlank
     @Column(nullable = false)
     private String category;
 

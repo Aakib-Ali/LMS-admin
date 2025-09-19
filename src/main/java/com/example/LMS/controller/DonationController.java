@@ -2,8 +2,11 @@ package com.example.LMS.controller;
 
 import com.example.LMS.dto.request.DonationRequest;
 import com.example.LMS.dto.response.ApiResponse;
+import com.example.LMS.dto.response.DonationResponse;
 import com.example.LMS.model.*;
 import com.example.LMS.repository.*;
+import com.example.LMS.service.DonationService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +26,27 @@ public class DonationController {
 
     @Autowired
     private DonationRepository donationRepository;
+    
+    @Autowired
+    private DonationService donationService;
 
     @Autowired
     private MemberRepository memberRepository;
+    
+    @Operation(summary = "Get Pending Request Count")
+    @GetMapping("/pending-count")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getPendingCount(){
+    	DonationStatus donationStatus = DonationStatus.valueOf("PENDING");
+        List<Donation> donations = donationRepository.findByStatus(donationStatus);
+    	return ResponseEntity.ok(new ApiResponse(true,"Donations count Successfully",donations.size()));
+    }
 
     @Operation(summary = "Get all donations")
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<?> getAllDonations() {
-        List<Donation> donations = donationRepository.findAll();
+        List<DonationResponse> donations = donationService.getAllDonations();
         return ResponseEntity.ok(new ApiResponse(true, "Donations retrieved successfully", donations));
     }
 
@@ -47,7 +62,7 @@ public class DonationController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<?> getDonationsByStatus(@PathVariable String status) {
         try {
-            DonationStatus donationStatus = DonationStatus.valueOf(status.toUpperCase());
+            DonationStatus donationStatus = DonationStatus.valueOf(status);
             List<Donation> donations = donationRepository.findByStatus(donationStatus);
             return ResponseEntity.ok(new ApiResponse(true, "Donations retrieved successfully", donations));
         } catch (IllegalArgumentException e) {

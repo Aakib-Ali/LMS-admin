@@ -4,20 +4,22 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "complaint_responses")
+//@JsonIgnoreProperties({"hibernateLazyInitializer","handler","complaint"})
 public class ComplaintResponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "complaint_id", nullable = false)
     private Complaint complaint;
 
-    @NotBlank
-    @Column(name = "responded_by", nullable = false)
-    private String respondedBy;
+    @Column(name = "responded_by")
+    private String respondedBy="ADMIN";
 
     @NotBlank
     @Column(name = "response_text", nullable = false, length = 2000)

@@ -11,7 +11,7 @@ public class Donation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
@@ -93,3 +93,4 @@ public class Donation {
     public LocalDateTime getReviewDate() { return reviewDate; }
     public void setReviewDate(LocalDateTime reviewDate) { this.reviewDate = reviewDate; }
 }
+

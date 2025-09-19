@@ -1,11 +1,14 @@
 package com.example.LMS.service;
 
+import com.example.LMS.mapper.Mapper;
+import com.example.LMS.dto.response.MemberResponse;
 import com.example.LMS.model.Member;
 import com.example.LMS.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,9 +17,16 @@ public class MemberService {
 
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    Mapper mapper;
 
-    public List<Member> getAllMembers() {
-        return memberRepository.findAll();
+    public List<MemberResponse> getAllMembers() {
+    	List<MemberResponse> memberResponses=new ArrayList<MemberResponse>();
+        List<Member> members=memberRepository.findAll();
+        for(Member member:members) {
+        	memberResponses.add(mapper.toResponse(member));
+        }
+        return memberResponses;
     }
 
     public Optional<Member> getMemberById(Long id) {
@@ -51,4 +61,8 @@ public class MemberService {
             memberRepository.save(member);
         }
     }
+    
+//    public Long getTotalFines() {
+//    	return memberRepository.sumTotalFines();
+//    }
 }

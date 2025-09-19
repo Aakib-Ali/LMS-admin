@@ -1,5 +1,7 @@
 package com.example.LMS.service;
 
+import com.example.LMS.mapper.Mapper;
+import com.example.LMS.dto.response.DonationResponse;
 import com.example.LMS.model.*;
 import com.example.LMS.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,14 +18,23 @@ public class DonationService {
 
     @Autowired
     private DonationRepository donationRepository;
+    
+    @Autowired
+    private Mapper mapper;
 
     @Autowired
     private MemberRepository memberRepository;
 
-    public List<Donation> getAllDonations() {
-        return donationRepository.findAll();
+    public List<DonationResponse> getAllDonations() {
+        List<Donation> donations=donationRepository.findAll();
+        List<DonationResponse> dr=new ArrayList<DonationResponse>();
+        for(Donation d:donations) {
+        	dr.add(mapper.toResponse(d));
+        }
+        return dr;
+        
     }
-
+    
     public List<Donation> getDonationsByMember(Long memberId) {
         return donationRepository.findByMemberId(memberId);
     }

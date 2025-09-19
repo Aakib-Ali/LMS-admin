@@ -1,3 +1,4 @@
+
 package com.example.LMS.controller;
 
 import com.example.LMS.dto.request.AdminRegistrationRequest;
@@ -60,9 +61,10 @@ public class AuthController {
                 adminRepository.save(adminUser);
 
                 String token = jwtUtil.generateToken(adminUser.getEmail(), adminUser.getRole().name(), adminUser.getId());
+                System.out.println(token);
                 
                 LoginResponse loginResponse = new LoginResponse(token, adminUser.getId(), 
-                    adminUser.getEmail(), adminUser.getName(), adminUser.getRole().name());
+                    adminUser.getEmail(), adminUser.getName(), adminUser.getRole().name(),adminUser.getIsActive(),adminUser.getLastLogin());
                 
                 return ResponseEntity.ok(new ApiResponse(true, "Login successful", loginResponse));
             }
@@ -87,7 +89,7 @@ public class AuthController {
                 String token = jwtUtil.generateToken(memberUser.getEmail(), memberUser.getRole().name(), memberUser.getId());
                 
                 LoginResponse loginResponse = new LoginResponse(token, memberUser.getId(), 
-                    memberUser.getEmail(), memberUser.getName(), memberUser.getRole().name());
+                    memberUser.getEmail(), memberUser.getName(), memberUser.getRole().name(),memberUser.getIsActive(),memberUser.getLastLogin());
                 
                 return ResponseEntity.ok(new ApiResponse(true, "Login successful", loginResponse));
             }
