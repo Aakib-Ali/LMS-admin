@@ -1,7 +1,6 @@
 package com.example.LMS.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,23 +11,19 @@ public class Complaint {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @NotBlank
     @Column(nullable = false)
     private String category;
 
-    @NotBlank
     @Column(nullable = false, length = 1000)
     private String title;
 
-    @NotBlank
     @Column(nullable = false, length = 2000)
     private String description;
 
-    @NotBlank
     @Column(name = "contact_preference", nullable = false)
     private String contactPreference;
 
@@ -54,44 +49,116 @@ public class Complaint {
     @OneToMany(mappedBy = "complaint", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ComplaintResponse> responses;
 
-    public Complaint() {}
+	public Long getId() {
+		return id;
+	}
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public Member getMember() { return member; }
-    public void setMember(Member member) { this.member = member; }
+	public Member getMember() {
+		return member;
+	}
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+	public void setMember(Member member) {
+		this.member = member;
+	}
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+	public String getCategory() {
+		return category;
+	}
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+	public void setCategory(String category) {
+		this.category = category;
+	}
 
-    public String getContactPreference() { return contactPreference; }
-    public void setContactPreference(String contactPreference) { this.contactPreference = contactPreference; }
+	public String getTitle() {
+		return title;
+	}
 
-    public LocalDateTime getSubmissionDate() { return submissionDate; }
-    public void setSubmissionDate(LocalDateTime submissionDate) { this.submissionDate = submissionDate; }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public ComplaintStatus getStatus() { return status; }
-    public void setStatus(ComplaintStatus status) { this.status = status; }
+	public String getDescription() {
+		return description;
+	}
 
-    public String getAssignedTo() { return assignedTo; }
-    public void setAssignedTo(String assignedTo) { this.assignedTo = assignedTo; }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public String getPriority() { return priority; }
-    public void setPriority(String priority) { this.priority = priority; }
+	public String getContactPreference() {
+		return contactPreference;
+	}
 
-    public LocalDateTime getResolutionDate() { return resolutionDate; }
-    public void setResolutionDate(LocalDateTime resolutionDate) { this.resolutionDate = resolutionDate; }
+	public void setContactPreference(String contactPreference) {
+		this.contactPreference = contactPreference;
+	}
 
-    public String getResolutionNotes() { return resolutionNotes; }
-    public void setResolutionNotes(String resolutionNotes) { this.resolutionNotes = resolutionNotes; }
+	public LocalDateTime getSubmissionDate() {
+		return submissionDate;
+	}
 
-    public List<ComplaintResponse> getResponses() { return responses; }
-    public void setResponses(List<ComplaintResponse> responses) { this.responses = responses; }
+	public void setSubmissionDate(LocalDateTime submissionDate) {
+		this.submissionDate = submissionDate;
+	}
+
+	public ComplaintStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(ComplaintStatus status) {
+		this.status = status;
+	}
+
+	public String getAssignedTo() {
+		return assignedTo;
+	}
+
+	public void setAssignedTo(String assignedTo) {
+		this.assignedTo = assignedTo;
+	}
+
+	public String getPriority() {
+		return priority;
+	}
+
+	public void setPriority(String priority) {
+		this.priority = priority;
+	}
+
+	public LocalDateTime getResolutionDate() {
+		return resolutionDate;
+	}
+
+	public void setResolutionDate(LocalDateTime resolutionDate) {
+		this.resolutionDate = resolutionDate;
+	}
+
+	public String getResolutionNotes() {
+		return resolutionNotes;
+	}
+
+	public void setResolutionNotes(String resolutionNotes) {
+		this.resolutionNotes = resolutionNotes;
+	}
+
+	public List<ComplaintResponse> getResponses() {
+		return responses;
+	}
+
+	public void setResponses(List<ComplaintResponse> responses) {
+		this.responses = responses;
+	}
+
+	public Complaint() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+    
+    
+    // Getters and setters...
 }

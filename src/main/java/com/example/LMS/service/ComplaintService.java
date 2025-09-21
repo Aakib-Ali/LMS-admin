@@ -2,9 +2,13 @@ package com.example.LMS.service;
 
 import com.example.LMS.mapper.Mapper;
 import com.example.LMS.dto.response.CompResponse;
+import com.example.LMS.dto.response.ComplaintDto;
 import com.example.LMS.model.*;
 import com.example.LMS.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,20 +32,8 @@ public class ComplaintService {
     @Autowired
     private MemberRepository memberRepository;
 
-    public List<CompResponse> getAllComplaints() {
-    	List<CompResponse> compResponses=new ArrayList<CompResponse>();
-        List<Complaint> complaints=complaintRepository.findAll();
-        
-        for(Complaint complaint:complaints) {
-        	System.out.println(complaint.getMember().getId());
-        	compResponses.add(mapper.toResponse(complaint));
-        	
-        }
-        return compResponses;
-    }
-
-    public List<CompResponse> getComplaintsByMember(Long memberId) {
-    	List<CompResponse> compResponses=new ArrayList<CompResponse>();
+    public List<ComplaintDto> getComplaintsByMember(Long memberId) {
+    	List<ComplaintDto> compResponses=new ArrayList<ComplaintDto>();
         List<Complaint> complaints=complaintRepository.findByMemberId(memberId);
         for(Complaint complaint:complaints) {
         	compResponses.add(mapper.toResponse(complaint));
@@ -49,11 +41,21 @@ public class ComplaintService {
         return compResponses;
     }
 
-    public List<Complaint> getComplaintsByStatus(ComplaintStatus status) {
-        return complaintRepository.findByStatus(status);
+    public Page<ComplaintDto> getComplaints(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Complaint> complaintPage = complaintRepository.findAll(pageable);
+        return complaintPage.map(mapper::toResponse);
     }
 
-    public Optional<CompResponse> getComplaintById(Long id) {
+
+
+
+    public Page<ComplaintDto> getComplaintsByStatus(String status, int page, int size) {
+        return complaintRepository.findByStatus(ComplaintStatus.valueOf(status), PageRequest.of(page, size))
+                .map(mapper::toResponse); 
+    }
+    
+    public Optional<ComplaintDto> getComplaintById(Long id) {
         return complaintRepository.findById(id)
         		.map(complaint->mapper.toResponse(complaint));
     }

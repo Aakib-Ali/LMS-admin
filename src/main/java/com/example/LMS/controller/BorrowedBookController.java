@@ -91,8 +91,8 @@ public class BorrowedBookController {
         BorrowedBook borrowedBook = new BorrowedBook();
         borrowedBook.setBook(book);
         borrowedBook.setMember(member);
-        borrowedBook.setBorrowDate(LocalDate.now());
-        borrowedBook.setDueDate(LocalDate.now().plusDays(14));
+        borrowedBook.setBorrowDate(LocalDateTime.now());
+        borrowedBook.setDueDate(LocalDateTime.now().plusDays(14));
         borrowedBook.setStatus(BorrowStatus.BORROWED);
         borrowedBook.setFine(0.0);
         borrowedBook.setCreatedDate(LocalDateTime.now());
@@ -127,15 +127,16 @@ public class BorrowedBookController {
             return ResponseEntity.badRequest().body(new ApiResponse(false, "Book already returned"));
         }
 
-        borrowedBook.setReturnDate(LocalDate.now());
+        borrowedBook.setReturnDate(LocalDateTime.now());
         borrowedBook.setStatus(BorrowStatus.RETURNED);
         borrowedBook.setUpdatedDate(LocalDateTime.now());
 
-        if (LocalDate.now().isAfter(borrowedBook.getDueDate())) {
-            long overdueDays = LocalDate.now().toEpochDay() - borrowedBook.getDueDate().toEpochDay();
+        if (LocalDateTime.now().isAfter(borrowedBook.getDueDate())) {
+            long overdueDays = LocalDate.now().toEpochDay() - borrowedBook.getDueDate().toLocalDate().toEpochDay();
             double fine = overdueDays * 1.0;
             borrowedBook.setFine(fine);
         }
+
 
         Book book = borrowedBook.getBook();
         book.setAvailableCopies(book.getAvailableCopies() + 1);

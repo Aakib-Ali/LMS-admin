@@ -6,11 +6,13 @@ import com.example.LMS.dto.request.LoginRequest;
 import com.example.LMS.dto.request.MemberRegistrationRequest;
 import com.example.LMS.dto.response.ApiResponse;
 import com.example.LMS.dto.response.LoginResponse;
+import com.example.LMS.model.Activity;
 import com.example.LMS.model.Admin;
 import com.example.LMS.model.Member;
 import com.example.LMS.model.Role;
 import com.example.LMS.repository.AdminRepository;
 import com.example.LMS.repository.MemberRepository;
+import com.example.LMS.service.ActivityService;
 import com.example.LMS.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +35,9 @@ public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+    
+    @Autowired
+    private ActivityService activityService;
 
     @Autowired
     private AdminRepository adminRepository;
@@ -65,7 +70,7 @@ public class AuthController {
                 
                 LoginResponse loginResponse = new LoginResponse(token, adminUser.getId(), 
                     adminUser.getEmail(), adminUser.getName(), adminUser.getRole().name(),adminUser.getIsActive(),adminUser.getLastLogin());
-                
+                activityService.logActivity("Admin Login"," ", null);
                 return ResponseEntity.ok(new ApiResponse(true, "Login successful", loginResponse));
             }
             return ResponseEntity.badRequest().body(new ApiResponse(false, "Admin not found"));
@@ -90,7 +95,7 @@ public class AuthController {
                 
                 LoginResponse loginResponse = new LoginResponse(token, memberUser.getId(), 
                     memberUser.getEmail(), memberUser.getName(), memberUser.getRole().name(),memberUser.getIsActive(),memberUser.getLastLogin());
-                
+                activityService.logActivity("Member Login", "New member: " + memberUser.getName(), null);
                 return ResponseEntity.ok(new ApiResponse(true, "Login successful", loginResponse));
             }
             return ResponseEntity.badRequest().body(new ApiResponse(false, "Member not found"));
@@ -147,6 +152,7 @@ public class AuthController {
         member.setRegistrationDate(LocalDateTime.now());
 
         memberRepository.save(member);
+        activityService.logActivity("Member Registered", "New member: " + member.getName(), member);
         return ResponseEntity.ok(new ApiResponse(true, "Member registered successfully"));
     }
 }

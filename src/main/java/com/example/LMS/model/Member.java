@@ -53,16 +53,6 @@ public class Member {
     @Column(name = "total_fines")
     private Double totalFines = 0.0;
     
-    @Column(name="member_id")
-    private String memberId;
-
-    public String getMemberId() {
-		return memberId;
-	}
-
-	public void setMemberId(String memberId) {
-		this.memberId = memberId;
-	}
 	@Column(name = "has_overdue_books")
     private Boolean hasOverdueBooks = false;
 

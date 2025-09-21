@@ -1,17 +1,10 @@
 package com.example.LMS.dto.response;
 
-import java.sql.Date;
+import com.example.LMS.model.ComplaintStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
-import com.example.LMS.model.ComplaintResponse;
-import com.example.LMS.model.ComplaintStatus;
-
-
-@Component
-public class CompResponse {
+public class ComplaintDto {
     private Long id;
     private Long memberId;
     private String memberName;
@@ -23,17 +16,9 @@ public class CompResponse {
     private String status;
     private String assignedTo;
     private String priority;
-    private List<ComplaintResponse> responses;
+    private List<ComplaintResponseDto> responses;
     private LocalDateTime resolutionDate;
     private String resolutionNotes;
-    
-    
-    
-    public CompResponse() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	// getters/setters
 	public Long getId() {
 		return id;
 	}
@@ -100,10 +85,10 @@ public class CompResponse {
 	public void setPriority(String priority) {
 		this.priority = priority;
 	}
-	public List<ComplaintResponse> getResponses() {
+	public List<ComplaintResponseDto> getResponses() {
 		return responses;
 	}
-	public void setResponses(List<ComplaintResponse> responses) {
+	public void setResponses(List<ComplaintResponseDto> responses) {
 		this.responses = responses;
 	}
 	public LocalDateTime getResolutionDate() {
@@ -118,6 +103,11 @@ public class CompResponse {
 	public void setResolutionNotes(String resolutionNotes) {
 		this.resolutionNotes = resolutionNotes;
 	}
-    
+	public ComplaintDto() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+    // Getters and setters...
     
 }

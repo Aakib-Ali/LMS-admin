@@ -5,15 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 public class BookRequest {
 
-	private String bookId;
-	public String getBookId() {
-		return bookId;
-	}
-
-	public void setBookId(String bookId) {
-		this.bookId = bookId;
-	}
-
 	public void setImageFile(String imageFile) {
 		this.imageFile = imageFile;
 	}

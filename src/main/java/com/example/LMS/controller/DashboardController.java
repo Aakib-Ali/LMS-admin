@@ -1,8 +1,13 @@
 package com.example.LMS.controller;
 
 import com.example.LMS.dto.response.ApiResponse;
+import com.example.LMS.dto.response.DashboardStatsDto;
+import com.example.LMS.dto.response.MonthlyStatsDto;
+import com.example.LMS.dto.response.RecentActivityDto;
 import com.example.LMS.model.*;
 import com.example.LMS.repository.*;
+import com.example.LMS.service.ActivityService;
+import com.example.LMS.service.DashboardService;
 import com.example.LMS.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +18,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,42 +40,32 @@ public class DashboardController {
 
     @Autowired
     private ComplaintRepository complaintRepository;
+    @Autowired private DashboardService dashboardService;
+    @Autowired private ActivityService activityService;
+    
 
     @Autowired
     private DonationRepository donationRepository;
+    
+    @PostMapping("/refresh")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<DashboardStatsDto> refreshStats() {
+        // Recalculate and return fresh stats
+        DashboardStatsDto stats = dashboardService.getDashboardStats();
+        return ResponseEntity.ok(stats);
+    }
 
     @Operation(summary = "Get admin dashboard statistics")
     @GetMapping("/admin/stats")
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<?> getAdminDashboardStats() {
-        Map<String, Object> stats = new HashMap<>();
+        DashboardStatsDto stats = dashboardService.getDashboardStats();
         
-        long totalBooks = bookRepository.count();
-        long availableBooks = bookRepository.findByIsActiveTrue().size();
-        long totalMembers = memberRepository.count();
-        long totalBorrowedBooks = borrowedBookRepository.findAll().stream()
-                .mapToInt(bb -> bb.getStatus() == BorrowStatus.BORROWED ? 1 : 0)
-                .sum();
-        long overdueBooks = borrowedBookRepository.findOverdueBooks(LocalDate.now(), BorrowStatus.BORROWED).size();
-        long totalComplaints = complaintRepository.count();
-        long pendingComplaints = complaintRepository.findByStatus(ComplaintStatus.OPEN).size();
-        long totalDonations = donationRepository.count();
-        long pendingDonations = donationRepository.findByStatus(DonationStatus.PENDING).size();
+        // Use repository methods for efficient counting
         
-        
-        
-        stats.put("totalBooks", totalBooks);
-        stats.put("availableBooks", availableBooks);
-        stats.put("totalMembers", totalMembers);
-        stats.put("totalBorrowedBooks", totalBorrowedBooks);
-        stats.put("overdueBooks", overdueBooks);
-        stats.put("totalComplaints", totalComplaints);
-        stats.put("pendingComplaints", pendingComplaints); 
-        stats.put("totalDonations", totalDonations);
-        stats.put("pendingDonations", pendingDonations);
-        System.out.println(stats);
         return ResponseEntity.ok(new ApiResponse(true, "Dashboard stats retrieved successfully", stats));
     }
+
 
     @Operation(summary = "Get member dashboard statistics")
     @GetMapping("/member/{memberId}/stats")

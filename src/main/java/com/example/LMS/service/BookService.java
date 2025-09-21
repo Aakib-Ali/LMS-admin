@@ -39,10 +39,6 @@ public class BookService {
         return bookResponse;
     }
     
-    Optional<Book> findByBookId(String BookId){
-    	return bookRepository.findByBookId(BookId);
-    }
-
     public Optional<Book> getBookById(Long id) {
         return bookRepository.findById(id);
     }

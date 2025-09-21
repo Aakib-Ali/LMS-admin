@@ -47,7 +47,7 @@ public class BookController {
     @Operation(summary = "Get book by ID")
     @GetMapping("/{id}")
     public ResponseEntity<?> getBookById(@PathVariable String id) {
-        Optional<Book> book = bookRepository.findByBookId(id);
+        Optional<Book> book = bookRepository.findById(Long.parseLong(id));
         if (book.isPresent() && book.get().getIsActive()) {
             return ResponseEntity.ok(new ApiResponse(true, "Book retrieved successfully", book.get()));
         }

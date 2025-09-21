@@ -52,8 +52,8 @@ public class BorrowingService {
         BorrowedBook borrowedBook = new BorrowedBook();
         borrowedBook.setBook(book);
         borrowedBook.setMember(member);
-        borrowedBook.setBorrowDate(LocalDate.now());
-        borrowedBook.setDueDate(LocalDate.now().plusDays(LENDING_PERIOD_DAYS));
+        borrowedBook.setBorrowDate(LocalDateTime.now());
+        borrowedBook.setDueDate(LocalDateTime.now().plusDays(LENDING_PERIOD_DAYS));
         borrowedBook.setStatus(BorrowStatus.BORROWED);
         borrowedBook.setFine(0.0);
         borrowedBook.setIssuedBy(issuedBy);
@@ -87,13 +87,13 @@ public class BorrowingService {
             throw new RuntimeException("Book already returned");
         }
 
-        borrowedBook.setReturnDate(LocalDate.now());
+        borrowedBook.setReturnDate(LocalDateTime.now());
         borrowedBook.setStatus(BorrowStatus.RETURNED);
         borrowedBook.setReturnedTo(returnedTo);
         borrowedBook.setUpdatedDate(LocalDateTime.now());
 
-        if (LocalDate.now().isAfter(borrowedBook.getDueDate())) {
-            long overdueDays = LocalDate.now().toEpochDay() - borrowedBook.getDueDate().toEpochDay();
+        if (LocalDate.now().isAfter(borrowedBook.getDueDate().toLocalDate())) {
+            long overdueDays = LocalDate.now().toEpochDay() - borrowedBook.getDueDate().toLocalDate().toEpochDay();
             double fine = overdueDays * FINE_PER_DAY;
             borrowedBook.setFine(fine);
             borrowedBook.setStatus(BorrowStatus.OVERDUE);

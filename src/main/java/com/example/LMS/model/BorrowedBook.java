@@ -22,14 +22,14 @@ public class BorrowedBook {
 
     @NotNull
     @Column(name = "borrow_date", nullable = false)
-    private LocalDate borrowDate;
+    private LocalDateTime borrowDate;
 
     @NotNull
     @Column(name = "due_date", nullable = false)
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
 
     @Column(name = "return_date")
-    private LocalDate returnDate;
+    private LocalDateTime returnDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -67,14 +67,14 @@ public class BorrowedBook {
     public Member getMember() { return member; }
     public void setMember(Member member) { this.member = member; }
 
-    public LocalDate getBorrowDate() { return borrowDate; }
-    public void setBorrowDate(LocalDate borrowDate) { this.borrowDate = borrowDate; }
+    public LocalDateTime getBorrowDate() { return borrowDate; }
+    public void setBorrowDate(LocalDateTime borrowDate) { this.borrowDate = borrowDate; }
 
-    public LocalDate getDueDate() { return dueDate; }
-    public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
+    public LocalDateTime getDueDate() { return dueDate; }
+    public void setDueDate(LocalDateTime dueDate) { this.dueDate = dueDate; }
 
-    public LocalDate getReturnDate() { return returnDate; }
-    public void setReturnDate(LocalDate returnDate) { this.returnDate = returnDate; }
+    public LocalDateTime getReturnDate() { return returnDate; }
+    public void setReturnDate(LocalDateTime returnDate) { this.returnDate = returnDate; }
 
     public BorrowStatus getStatus() { return status; }
     public void setStatus(BorrowStatus status) { this.status = status; }

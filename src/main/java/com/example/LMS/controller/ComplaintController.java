@@ -3,6 +3,7 @@ package com.example.LMS.controller;
 import com.example.LMS.dto.request.ComplaintRequest;
 import com.example.LMS.dto.response.ApiResponse;
 import com.example.LMS.dto.response.CompResponse;
+import com.example.LMS.dto.response.ComplaintDto;
 import com.example.LMS.model.*;
 import com.example.LMS.repository.*;
 import com.example.LMS.service.ComplaintService;
@@ -10,6 +11,7 @@ import com.example.LMS.service.ComplaintService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -39,10 +41,23 @@ public class ComplaintController {
     @Operation(summary = "Get all complaints")
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> getAllComplaints() {
-        List<CompResponse> complaints = complaintService.getAllComplaints();
-        return ResponseEntity.ok(new ApiResponse(true, "Complaints retrieved successfully", complaints));
+    public ResponseEntity<ApiResponse<Page<ComplaintDto>>> getComplaints(
+    	    @RequestParam(defaultValue = "0") int page,
+    	    @RequestParam(defaultValue = "10") int size) {
+    	    return ResponseEntity.ok(new ApiResponse(true, "Complaints retrieved successfully", complaintService.getComplaints(page, size)));
     }
+
+
+    @Operation(summary = "Get complaints by status")
+    @GetMapping("/status/{status}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ComplaintDto>> getComplaintsByStatus(
+        @PathVariable String status,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(complaintService.getComplaintsByStatus(status, page, size));
+    }
+
 
     @Operation(summary = "Get complaints by member")
     @GetMapping("/member/{memberId}")
@@ -51,28 +66,18 @@ public class ComplaintController {
         return ResponseEntity.ok(new ApiResponse(true, "Complaints retrieved successfully", complaints));
     }
 
-    @Operation(summary = "Get complaints by status")
-    @GetMapping("/status/{status}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> getComplaintsByStatus(@PathVariable String status) {
-        try {
-            ComplaintStatus complaintStatus = ComplaintStatus.valueOf(status.toUpperCase());
-            List<Complaint> complaints = complaintRepository.findByStatus(complaintStatus);
-            return ResponseEntity.ok(new ApiResponse(true, "Complaints retrieved successfully", complaints));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new ApiResponse(false, "Invalid status"));
-        }
-    }
+
 
     @Operation(summary = "Get complaint by ID")
     @GetMapping("/{id}")
     public ResponseEntity<?> getComplaintById(@PathVariable String id) {
-        Optional<CompResponse> complaint = complaintService.getComplaintById(Long.parseLong(id));
+        Optional<ComplaintDto> complaint = complaintService.getComplaintById(Long.parseLong(id));
         if (complaint.isPresent()) {
             return ResponseEntity.ok(new ApiResponse(true, "Complaint retrieved successfully", complaint.get()));
         }
         return ResponseEntity.notFound().build();
     }
+
 
     @Operation(summary = "File a new complaint")
     @PostMapping
@@ -143,19 +148,8 @@ public class ComplaintController {
                                                 @RequestBody String responseText,
                                                 @RequestParam(defaultValue ="ADMIN") String respondedBy,
                                                 @RequestParam(defaultValue = "True") boolean isFromAdmin) {
-        Optional<Complaint> complaintOpt = complaintRepository.findById(id);
-        if (!complaintOpt.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
 
-        ComplaintResponse response = new ComplaintResponse();
-        response.setComplaint(complaintOpt.get());
-        response.setResponseText(responseText);
-        response.setRespondedBy(respondedBy);
-        response.setIsFromAdmin(isFromAdmin);
-        response.setResponseDate(LocalDateTime.now());
-
-        ComplaintResponse savedResponse = complaintResponseRepository.save(response);
+        ComplaintResponse savedResponse = complaintService.addResponse(id,responseText,respondedBy,isFromAdmin);
         return ResponseEntity.ok(new ApiResponse(true, "Response added successfully", null));
     }
 

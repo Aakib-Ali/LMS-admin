@@ -1,84 +1,49 @@
-package com.example.LMS.model;
+package com.example.LMS.dto.response;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "complaint_responses")
-public class ComplaintResponse {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ComplaintResponseDto {
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "complaint_id", nullable = false)
-    private Complaint complaint;
-
-    @Column(name = "responded_by")
-    private String respondedBy = "ADMIN";
-
-    @Column(name = "response_text", nullable = false, length = 2000)
+    private String respondedBy;
     private String responseText;
-
-    @Column(name = "response_date", nullable = false)
-    private LocalDateTime responseDate = LocalDateTime.now();
-
-    @Column(name = "is_from_admin", nullable = false)
-    private Boolean isFromAdmin = false;
-
+    private LocalDateTime responseDate;
+    private Boolean isFromAdmin;
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-	public Complaint getComplaint() {
-		return complaint;
-	}
-
-	public void setComplaint(Complaint complaint) {
-		this.complaint = complaint;
-	}
-
 	public String getRespondedBy() {
 		return respondedBy;
 	}
-
 	public void setRespondedBy(String respondedBy) {
 		this.respondedBy = respondedBy;
 	}
-
 	public String getResponseText() {
 		return responseText;
 	}
-
 	public void setResponseText(String responseText) {
 		this.responseText = responseText;
 	}
-
 	public LocalDateTime getResponseDate() {
 		return responseDate;
 	}
-
 	public void setResponseDate(LocalDateTime responseDate) {
 		this.responseDate = responseDate;
 	}
-
 	public Boolean getIsFromAdmin() {
 		return isFromAdmin;
 	}
-
 	public void setIsFromAdmin(Boolean isFromAdmin) {
 		this.isFromAdmin = isFromAdmin;
 	}
-
-	public ComplaintResponse() {
+	public ComplaintResponseDto() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
     // Getters and setters...
+    
     
 }

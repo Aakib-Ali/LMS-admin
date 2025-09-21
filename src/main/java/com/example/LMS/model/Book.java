@@ -21,17 +21,17 @@ public class Book {
     private String author;
 
 
-    @NotBlank
-    @Column(nullable = false)
-    private String bookId;
-
-    public String getBookId() {
-		return bookId;
-	}
-
-	public void setBookId(String bookId) {
-		this.bookId = bookId;
-	}
+//    @NotBlank
+//    @Column(nullable = false)
+//    private String bookId;
+//
+//    public String getBookId() {
+//		return bookId;
+//	}
+//
+//	public void setBookId(String bookId) {
+//		this.bookId = bookId;
+//	}
 	@NotBlank
     @Column(nullable = false)
     private String category;
